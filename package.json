@@ -6,6 +6,13 @@
   "author": "qinmingjie <1934394876@qq.com>",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^8.51.0"
+    "eslint": "^8.51.0",
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "koa": "^2.14.2"
+  },
+  "scripts": {
+    "dev": "nodemon ./src/app.js"
   }
 }
