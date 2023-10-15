@@ -1,29 +1,35 @@
-const { NAME_PASSWORD_IS_REQUIRED, NAME_IS_EXISTS, PASSWORD_RULES_ERROR } = require("../constant/error-type");
+const {
+  NAME_PASSWORD_IS_REQUIRED,
+  NAME_IS_EXISTS,
+  PASSWORD_RULES_ERROR,
+  NAME_IS_NOT_EXISTS,
+  PASSWORD_ERROR
+} = require("../constant/error-type");
 const { getUser } = require("../service/user.service");
 const { cryptoMd5 } = require("../utils/tool");
 
 // 通用验证(用户名密码非空及规则验证)
-const commonVerify = async (nickname, password, ctx) => {
+const commonVerify = (nickname, password, ctx) => {
   const regx = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
   // 1.非空验证
   if (!nickname || !password) {
-    ctx.app.emit("error", NAME_PASSWORD_IS_REQUIRED, ctx);
-    return;
+    return !ctx.app.emit("error", NAME_PASSWORD_IS_REQUIRED, ctx);
   }
 
   // 2.密码规则校验
   if (!regx.test(password)) {
-    ctx.app.emit("error", PASSWORD_RULES_ERROR, ctx);
-    return;
+    return !ctx.app.emit("error", PASSWORD_RULES_ERROR, ctx);
   }
+
+  return true;
 };
 
 // 注册信息验证
 const registerUserVerify = async (ctx, next) => {
   const { nickname, password } = ctx.request.body;
-  await commonVerify(nickname, password, ctx);
-
+  const isPass = commonVerify(nickname, password, ctx);
+  if (!isPass) return;
   // 用户已存在
   try {
     const user = await getUser(nickname);
@@ -44,7 +50,31 @@ const cryptoPassword = async (ctx, next) => {
   await next();
 };
 
+// 登录信息验证
+const loginVerify = async (ctx, next) => {
+  const { nickname, password } = ctx.request.body;
+  try {
+    const isPass = commonVerify(nickname, password, ctx);
+    if (!isPass) return;
+    const user = await getUser(nickname);
+    // 用户不存在
+    if (!user.length) {
+      return ctx.app.emit("error", NAME_IS_NOT_EXISTS, ctx);
+    }
+
+    // 密码错误
+    if (user[0].password !== cryptoMd5(password)) {
+      return ctx.app.emit("error", PASSWORD_ERROR, ctx);
+    }
+    ctx.user = user;
+  } catch (error) {
+    ctx.app.emit("error", { status: 500, message: error.message }, ctx);
+  }
+  await next();
+};
+
 module.exports = {
   registerUserVerify,
-  cryptoPassword
+  cryptoPassword,
+  loginVerify
 };
