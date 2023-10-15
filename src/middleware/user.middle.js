@@ -66,7 +66,7 @@ const loginVerify = async (ctx, next) => {
     if (user[0].password !== cryptoMd5(password)) {
       return ctx.app.emit("error", PASSWORD_ERROR, ctx);
     }
-    ctx.user = user;
+    ctx.user = user[0];
   } catch (error) {
     ctx.app.emit("error", { status: 500, message: error.message }, ctx);
   }

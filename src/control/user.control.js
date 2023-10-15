@@ -1,4 +1,7 @@
 const { insertUser } = require("../service/user.service");
+const jwt = require("jsonwebtoken");
+const { PRIVATE_KEY } = require("../config/config");
+
 class UserControl {
   async createUser(ctx, next) {
     const { nickname, password } = ctx.request.body;
@@ -14,6 +17,23 @@ class UserControl {
       ctx.app.emit("error", { status: 500, message: error.message }, ctx);
     }
     await next();
+  }
+  loginToken(ctx) {
+    const { id, name, password } = ctx.user;
+    try {
+      const token = jwt.sign({ id, name, password }, PRIVATE_KEY, {
+        expiresIn: "3 days",
+        algorithm: "RS256"
+      });
+      ctx.body = {
+        status: 200,
+        id,
+        name,
+        token
+      };
+    } catch (error) {
+      ctx.app.emit("error", { status: 500, message: error.message }, ctx);
+    }
   }
 }
 
