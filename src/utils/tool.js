@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 
 // 获取文件夹下所有文件夹或者文件名称
 function getRecursiveDir(dirPath, type = "directory", res = []) {
@@ -29,7 +30,14 @@ function handleCumtomError({ status = 404, message = "NOT FOUND" }, ctx) {
   ctx.body = { status, message };
 }
 
+// 加密密码
+function cryptoMd5(password) {
+  const md5 = crypto.createHash("md5");
+  return md5.update(password).digest("hex");
+}
+
 module.exports = {
   getRecursiveDir,
-  handleCumtomError
+  handleCumtomError,
+  cryptoMd5
 };

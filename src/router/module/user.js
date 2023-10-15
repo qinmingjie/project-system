@@ -1,8 +1,8 @@
 const Router = require("@koa/router");
-const { registerUserVerify } = require("../../middleware/user.middle");
+const { registerUserVerify, cryptoPassword } = require("../../middleware/user.middle");
 
 const userRouter = new Router();
 
-userRouter.post("/user", registerUserVerify);
+userRouter.post("/user", registerUserVerify, cryptoPassword);
 
 module.exports = userRouter;

@@ -1,6 +1,8 @@
 const { NAME_PASSWORD_IS_REQUIRED, NAME_IS_EXISTS, PASSWORD_RULES_ERROR } = require("../constant/error-type");
 const { getUser } = require("../service/user.service");
+const { cryptoMd5 } = require("../utils/tool");
 
+// 通用验证(用户名密码非空及规则验证)
 const commonVerify = async (nickname, password, ctx) => {
   const regx = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
@@ -17,6 +19,7 @@ const commonVerify = async (nickname, password, ctx) => {
   }
 };
 
+// 注册信息验证
 const registerUserVerify = async (ctx, next) => {
   const { nickname, password } = ctx.request.body;
   await commonVerify(nickname, password, ctx);
@@ -34,6 +37,14 @@ const registerUserVerify = async (ctx, next) => {
   await next();
 };
 
+// 加密密码
+const cryptoPassword = async (ctx, next) => {
+  const { password } = ctx.request.body;
+  ctx.request.body.password = cryptoMd5(password);
+  await next();
+};
+
 module.exports = {
-  registerUserVerify
+  registerUserVerify,
+  cryptoPassword
 };
