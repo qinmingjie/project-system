@@ -18,11 +18,16 @@ const PASSWORD_ERROR = {
   status: 400,
   message: "密码错误!"
 };
+const AUTHOR_VOID = {
+  status: 401,
+  message: "无效Token!"
+};
 
 module.exports = {
   NAME_PASSWORD_IS_REQUIRED,
   NAME_IS_EXISTS,
   PASSWORD_RULES_ERROR,
   NAME_IS_NOT_EXISTS,
-  PASSWORD_ERROR
+  PASSWORD_ERROR,
+  AUTHOR_VOID
 };

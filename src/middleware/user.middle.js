@@ -1,12 +1,16 @@
+const jwt = require("jsonwebtoken");
+
 const {
   NAME_PASSWORD_IS_REQUIRED,
   NAME_IS_EXISTS,
   PASSWORD_RULES_ERROR,
   NAME_IS_NOT_EXISTS,
-  PASSWORD_ERROR
+  PASSWORD_ERROR,
+  AUTHOR_VOID
 } = require("../constant/error-type");
 const { getUser } = require("../service/user.service");
 const { cryptoMd5 } = require("../utils/tool");
+const { PUBLIC_KEY } = require("../config/config");
 
 // 通用验证(用户名密码非空及规则验证)
 const commonVerify = (nickname, password, ctx) => {
@@ -73,8 +77,31 @@ const loginVerify = async (ctx, next) => {
   await next();
 };
 
+// 验证token
+const verifyToken = async (ctx, next) => {
+  const authorization = ctx.headers.authorization || "";
+  const token = authorization.replace("Bearer ", "");
+
+  // 未携带token
+  if (!token) {
+    return ctx.app.emit("error", AUTHOR_VOID, ctx);
+  }
+
+  // 解密token
+  try {
+    const result = jwt.verify(token, PUBLIC_KEY, {
+      algorithms: ["RS256"]
+    });
+    ctx.user = result;
+    await next();
+  } catch (error) {
+    ctx.app.emit("error", AUTHOR_VOID, ctx);
+  }
+};
+
 module.exports = {
   registerUserVerify,
   cryptoPassword,
-  loginVerify
+  loginVerify,
+  verifyToken
 };

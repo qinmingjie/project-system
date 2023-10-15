@@ -19,16 +19,16 @@ class UserControl {
     await next();
   }
   loginToken(ctx) {
-    const { id, name, password } = ctx.user;
+    const { id, nickname, password } = ctx.user;
     try {
-      const token = jwt.sign({ id, name, password }, PRIVATE_KEY, {
+      const token = jwt.sign({ id, nickname, password }, PRIVATE_KEY, {
         expiresIn: "3 days",
         algorithm: "RS256"
       });
       ctx.body = {
         status: 200,
         id,
-        name,
+        nickname,
         token
       };
     } catch (error) {
