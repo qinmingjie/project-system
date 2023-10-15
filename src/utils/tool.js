@@ -23,6 +23,13 @@ function getRecursiveDir(dirPath, type = "directory", res = []) {
   return res;
 }
 
+// 自定义错误处理
+function handleCumtomError({ status = 404, message = "NOT FOUND" }, ctx) {
+  ctx.status = status;
+  ctx.body = { status, message };
+}
+
 module.exports = {
-  getRecursiveDir
+  getRecursiveDir,
+  handleCumtomError
 };
