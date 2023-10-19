@@ -78,7 +78,7 @@ const loginVerify = async (ctx, next) => {
 };
 
 // 验证token
-const verifyToken = async (ctx, next) => {
+const TokenVerify = async (ctx, next) => {
   const authorization = ctx.headers.authorization || "";
   const token = authorization.replace("Bearer ", "");
 
@@ -103,5 +103,5 @@ module.exports = {
   registerUserVerify,
   cryptoPassword,
   loginVerify,
-  verifyToken
+  TokenVerify
 };
