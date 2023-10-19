@@ -1,5 +1,5 @@
 const Router = require("@koa/router");
 
-const uploadRouter = new Router("/upload");
+const uploadRouter = new Router({ prefix: "/upload" });
 
 module.exports = uploadRouter;
