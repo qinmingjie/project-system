@@ -15,6 +15,14 @@ class UploadService {
     `;
     return await asyncMysql.execute(statement, [filename, user_id]);
   }
+  // 插入图片
+  async insertPicture({ filename, size, mimetype, user_id }) {
+    const statement = `
+        INSERT INTO picture (filename, size, mimetype, user_id)
+        VALUES (?,?,?,?)
+    `;
+    return await asyncMysql.execute(statement, [filename, size, mimetype, user_id]);
+  }
 }
 
 module.exports = new UploadService();
