@@ -1,4 +1,6 @@
 const { insertAvatar, deleteUserOtherAvatar, insertPicture } = require("../service/upload.service");
+const { APP_HOST, APP_PORT } = require("../config/config");
+const { updateUser } = require("../service/user.service");
 
 class UploadControl {
   // 保存头像
@@ -6,10 +8,13 @@ class UploadControl {
     // 获取图片，用户信息
     const { filename, mimetype, size } = ctx.request.file;
     const { id } = ctx.user;
+
     // 将图片信息保存至数据库并删除旧的头像
     try {
       const result = await insertAvatar({ filename, mimetype, size, user_id: id });
       if (result.length) {
+        const filePath = `${APP_HOST}:${APP_PORT}/avatar/${id}`;
+        await updateUser({ avatar_url: filePath }, id);
         await deleteUserOtherAvatar({ user_id: id, filename });
       }
       ctx.body = {
