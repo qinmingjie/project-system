@@ -13,7 +13,7 @@ class UploadControl {
     try {
       const result = await insertAvatar({ filename, mimetype, size, user_id: id });
       if (result.length) {
-        const filePath = `${APP_HOST}:${APP_PORT}/avatar/${id}`;
+        const filePath = `${APP_HOST}:${APP_PORT}/user/avatar/${id}`;
         await updateUser({ avatar_url: filePath }, id);
         await deleteUserOtherAvatar({ user_id: id, filename });
       }

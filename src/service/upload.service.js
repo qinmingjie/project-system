@@ -23,6 +23,12 @@ class UploadService {
     `;
     return await asyncMysql.execute(statement, [filename, size, mimetype, user_id]);
   }
+  // 获取用户头像
+  async getUserAvatarById(user_id) {
+    const statement = `SELECT * FROM avatar WHERE user_id = ?`;
+    const [result] = await asyncMysql.execute(statement, [user_id]);
+    return result;
+  }
 }
 
 module.exports = new UploadService();
